@@ -1,4 +1,4 @@
-# Tolkien-Table
+# Tolkien-Table React-app
 A cool table of Tolkien-characters that can be sorted, filtered and more.
 
 ## Oppgavebeskrivelse
