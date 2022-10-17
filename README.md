@@ -13,5 +13,18 @@ A cool table of Tolkien-characters that can be sorted, filtered and more.
 
 5. Legg til støtte for pagination gjennom å bruke APIet.
 
+## Notat om funksjonalitet
+
+- Ved trykking på karakterenes navn åpnes modal med tilfeldig sitat fra karakteren (Om karakteren har sitat)
+
+- Søk på navn gjelder bare den aktuelle siden man er innpå
+
+- Man kan filtrere på flere races
+
+- Man kan sortere på ascending/descending ved å trykke på Navn-headeren
+
+
+
+
 
 
