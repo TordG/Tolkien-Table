@@ -15,7 +15,7 @@ A cool table of Tolkien-characters that can be sorted, filtered and more.
 
 ## Notat om funksjonalitet
 
-- Ved trykking på karakterenes navn åpnes modal med tilfeldig sitat fra karakteren (Om karakteren har sitat)
+- Ved trykking på karakterenes navn åpnes modal med tilfeldig sitat fra karakteren (Om karakteren har sitat. Vil anbefale å finne en velkjent karakter, f eks Aragorn II for å teste denne funksjonaliteten)
 
 - Søk på navn gjelder bare den aktuelle siden man er innpå
 
