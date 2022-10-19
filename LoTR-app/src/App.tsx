@@ -24,39 +24,31 @@ const headers = {
 };
 
 function App() {
+  const baseUrl = "https://the-one-api.dev/v2/character/";
   const [characters, setCharacters] = useState([] as Array<iCharacter>);
   const [displayLimit, setDisplayLimit] = useState<number>(10);
   const [pages, setPages] = useState<number>(0);
   const [ascending, setAscending] = useState<boolean>(true);
   const [search, setSearch] = useState<string>("");
-  const [url, setUrl] = useState<string>(
-    "https://the-one-api.dev/v2/character?race="
-  );
   const [page, setPage] = useState<number>(1);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [modalName, setModalName] = useState<string>("");
   const [modalQuote, setModalQuote] = useState<string>("");
+  const [races, setRaces] = useState([] as Array<string>);
 
   //Optional parameter newUrl for å trådsikre handleCheckbox
-  const fetchCharacters = async (newUrl: string = url) => {
-    const res = await axios.get(
-      `${newUrl}&limit=${displayLimit}&page=${page}&sort=name:asc`,
-      {
-        headers: headers,
-      }
-    );
-
+  const fetchCharacters = async () => {
+    const res = await axios.get(createApiUrl(), {
+      headers: headers,
+    });
     setPages(res.data.pages);
     setCharacters(res.data.docs as Array<iCharacter>);
   };
 
   const fetchQuote = async (id: string) => {
-    const res = await axios.get(
-      `https://the-one-api.dev/v2/character/${id}/quote`,
-      {
-        headers: headers,
-      }
-    );
+    const res = await axios.get(`${baseUrl}${id}/quote`, {
+      headers: headers,
+    });
 
     res.data.docs.length > 0
       ? setModalQuote(getRandom(res.data.docs).dialog)
@@ -75,9 +67,9 @@ function App() {
 
   useEffect(() => {
     fetchCharacters();
-  }, [displayLimit, page]);
+  }, [displayLimit, page, races]);
 
-  const handlePageClick = async (data: any) => {
+  const handlePageClick = async (data: { selected: number }) => {
     let currentPage = data.selected + 1; //pga array begynner på index 0
     setPage(currentPage);
 
@@ -92,16 +84,17 @@ function App() {
   const handleSearchChange = (event: any) => {
     setSearch(event.target.value);
   };
-
-  const handleCheckbox = async (event: any) => {
-    if (event.target.checked) {
-      let newUrl = `${url}${event.target.value},`;
-      setUrl(newUrl);
-      await fetchCharacters(newUrl); //await muligens unødvendig? Funker uten.
+  const createApiUrl = () => {
+    return `${baseUrl}?limit=${displayLimit}&page=${page}${
+      races ? "&race=" + races.map((r) => r + ",") : null
+    }&sort=name:asc`;
+  };
+  const handleCheckbox = (event: any) => {
+    const checked = event.target.checked;
+    if (checked) {
+      setRaces([...races, event.target.value]);
     } else {
-      let newUrl = url.replace(`${event.target.value},`, "");
-      setUrl(newUrl);
-      await fetchCharacters(newUrl);
+      setRaces(races.filter((r) => r != event.target.value));
     }
   };
 
