@@ -6,7 +6,7 @@ import ReactPaginate from "react-paginate";
 import Searchbar from "./components/Searchbar";
 import Checkboxes from "./components/Checkboxes";
 import ItemsPerPage from "./components/ItemsPerPage";
-import Modal from "./components/Modal";
+import Modal, { IModalData } from "./components/Modal";
 
 export interface iCharacter {
   _id: string;
@@ -17,11 +17,15 @@ export interface iCharacter {
   wikiUrl: string;
 }
 
+export interface modalData {}
+
 //Used for authentication
 const headers = {
   Accept: "application/json",
   Authorization: "Bearer MBI2jYjM0UW8pKOtmkwA",
 };
+
+type IHeader = keyof typeof headers;
 
 function App() {
   const baseUrl = "https://the-one-api.dev/v2/character/";
@@ -31,9 +35,10 @@ function App() {
   const [ascending, setAscending] = useState<boolean>(true);
   const [search, setSearch] = useState<string>("");
   const [page, setPage] = useState<number>(1);
-  const [openModal, setOpenModal] = useState<boolean>(false);
-  const [modalName, setModalName] = useState<string>("");
-  const [modalQuote, setModalQuote] = useState<string>("");
+  const [modalData, setModalData] = useState<IModalData>(null);
+  // const [openModal, setOpenModal] = useState<boolean>(false);
+  // const [modalName, setModalName] = useState<string>("");
+  // const [modalQuote, setModalQuote] = useState<string>("");
   const [races, setRaces] = useState([] as Array<string>);
 
   //Optional parameter newUrl for å trådsikre handleCheckbox
@@ -45,14 +50,19 @@ function App() {
     setCharacters(res.data.docs as Array<iCharacter>);
   };
 
-  const fetchQuote = async (id: string) => {
-    const res = await axios.get(`${baseUrl}${id}/quote`, {
+  const fetchQuote = async (char: iCharacter) => {
+    const res = await axios.get(`${baseUrl}${char._id}/quote`, {
       headers: headers,
     });
-
-    res.data.docs.length > 0
-      ? setModalQuote(getRandom(res.data.docs).dialog)
-      : setModalQuote("No quotes for this character!");
+    var data: typeof modalData = {
+      ...modalData,
+      modalName: char.name,
+      modalQuote:
+        res.data.docs.length > 0
+          ? getRandom(res.data.docs)?.dialog ?? ""
+          : 'No quotes for this character!"',
+    };
+    setModalData(data);
   };
 
   const sortByName = (chars: Array<iCharacter>) => {
@@ -98,23 +108,11 @@ function App() {
     }
   };
 
-  const handleNameClick = (char: iCharacter) => {
-    setOpenModal(true);
-    setModalName(char.name);
-    fetchQuote(char._id);
-  };
-
   return (
     <div className="App">
       <h1>Tolkien Characters</h1>
 
-      {openModal && (
-        <Modal
-          setOpenModal={setOpenModal}
-          modalName={modalName}
-          modalQuote={modalQuote}
-        />
-      )}
+      {modalData && <Modal modalData={modalData} setModalData={setModalData} />}
       <div className="filtering">
         <Checkboxes handleOnClick={handleCheckbox} />
         <Searchbar handleSearchChange={handleSearchChange} />
@@ -125,7 +123,7 @@ function App() {
         handleSortClick={handleSortClick}
         ascending={ascending}
         search={search}
-        handleNameClick={handleNameClick}
+        handleNameClick={fetchQuote}
       />
       <div className="page-options">
         <ItemsPerPage setDisplayLimit={setDisplayLimit} />

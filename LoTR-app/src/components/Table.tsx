@@ -5,7 +5,7 @@ interface IOwnProps {
   handleSortClick: () => void;
   ascending: boolean;
   search: string;
-  handleNameClick: (event: any) => void;
+  handleNameClick: (char: iCharacter) => void;
 }
 
 const Table = ({
