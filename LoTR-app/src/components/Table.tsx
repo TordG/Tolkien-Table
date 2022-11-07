@@ -35,25 +35,27 @@ const Table = ({
           .filter((character) => {
             return character.name.toLowerCase().includes(search);
           })
-          .map((character) => (
-            <tr key={character._id}>
-              <td onClick={() => handleNameClick(character)}>
-                {character.name}
-              </td>
-              <td>{checkIfKnown(character.race)}</td>
-              <td>{checkIfKnown(character.gender)}</td>
-              <td>
-                {character.wikiUrl ? (
-                  <a href={character.wikiUrl}>
-                    Learn more about {character.name} at LoTR Wiki
-                  </a>
-                ) : (
-                  `No wiki page for ${character.name}`
-                )}
-              </td>
-              <td>{checkIfKnown(character.birth)}</td>
-            </tr>
-          ))}
+          .map((character) =>
+            character.name !== "MINOR_CHARACTER" ? (
+              <tr key={character._id}>
+                <td onClick={() => handleNameClick(character)}>
+                  {character.name}
+                </td>
+                <td>{checkIfKnown(character.race)}</td>
+                <td>{checkIfKnown(character.gender)}</td>
+                <td>
+                  {character.wikiUrl ? (
+                    <a href={character.wikiUrl}>
+                      Learn more about {character.name} at LoTR Wiki
+                    </a>
+                  ) : (
+                    `No wiki page for ${character.name}`
+                  )}
+                </td>
+                <td>{checkIfKnown(character.birth)}</td>
+              </tr>
+            ) : null
+          )}
       </tbody>
     </table>
   );
