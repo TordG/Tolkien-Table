@@ -7,6 +7,9 @@ import Searchbar from "./components/Searchbar";
 import Checkboxes from "./components/Checkboxes";
 import ItemsPerPage from "./components/ItemsPerPage";
 import Modal, { IModalData } from "./components/Modal";
+import qs from "qs";
+import { createBrowserHistory } from "history";
+import { request } from "http";
 
 export interface iCharacter {
   _id: string;
@@ -17,18 +20,13 @@ export interface iCharacter {
   wikiUrl: string;
 }
 
-export interface modalData {}
-
 //Used for authentication
 const headers = {
   Accept: "application/json",
   Authorization: "Bearer MBI2jYjM0UW8pKOtmkwA",
 };
 
-type IHeader = keyof typeof headers;
-
 function App() {
-  const baseUrl = "https://the-one-api.dev/v2/character/";
   const [characters, setCharacters] = useState([] as Array<iCharacter>);
   const [displayLimit, setDisplayLimit] = useState<number>(10);
   const [pages, setPages] = useState<number>(0);
@@ -36,31 +34,33 @@ function App() {
   const [search, setSearch] = useState<string>("");
   const [page, setPage] = useState<number>(1);
   const [modalData, setModalData] = useState<IModalData>(null);
-  // const [openModal, setOpenModal] = useState<boolean>(false);
-  // const [modalName, setModalName] = useState<string>("");
-  // const [modalQuote, setModalQuote] = useState<string>("");
   const [races, setRaces] = useState([] as Array<string>);
+  const [mounted, setMounted] = useState(false);
+  const baseUrl = "https://the-one-api.dev/v2/character/";
+  const history = createBrowserHistory();
 
   //Optional parameter newUrl for å trådsikre handleCheckbox
   const fetchCharacters = async () => {
+    console.log("fetch");
     const res = await axios.get(createApiUrl(), {
       headers: headers,
     });
     setPages(res.data.pages);
+
     setCharacters(res.data.docs as Array<iCharacter>);
   };
 
-  const fetchQuote = async (char: iCharacter) => {
+  const displayModal = async (char: iCharacter) => {
     const res = await axios.get(`${baseUrl}${char._id}/quote`, {
       headers: headers,
     });
-    var data: typeof modalData = {
+    var data: IModalData = {
       ...modalData,
       modalName: char.name,
       modalQuote:
         res.data.docs.length > 0
-          ? getRandom(res.data.docs)?.dialog ?? ""
-          : 'No quotes for this character!"',
+          ? getRandom(res.data.docs)?.dialog ?? false
+          : "No quotes for this character!",
     };
     setModalData(data);
   };
@@ -76,14 +76,30 @@ function App() {
   };
 
   useEffect(() => {
-    fetchCharacters();
-  }, [displayLimit, page, races]);
+    const filterParams = history.location.search.substr(1);
+    const filtersFromParams = qs.parse(filterParams);
+    console.log("filter", filtersFromParams);
+    if (filtersFromParams.page) {
+      setPage(Number(filtersFromParams.page));
+    }
+
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted) {
+      fetchCharacters();
+      history.push(`?page=${page}`);
+      setAscending(true);
+
+      console.log("KJØRT!");
+      console.log("Page er nå " + page);
+    }
+  }, [displayLimit, page, races, mounted]);
 
   const handlePageClick = async (data: { selected: number }) => {
     let currentPage = data.selected + 1; //pga array begynner på index 0
     setPage(currentPage);
-
-    setAscending(true);
   };
 
   const handleSortClick = () => {
@@ -103,8 +119,10 @@ function App() {
     const checked = event.target.checked;
     if (checked) {
       setRaces([...races, event.target.value]);
+      setPage(1);
     } else {
       setRaces(races.filter((r) => r != event.target.value));
+      setPage(1);
     }
   };
 
@@ -123,9 +141,10 @@ function App() {
         handleSortClick={handleSortClick}
         ascending={ascending}
         search={search}
-        handleNameClick={fetchQuote}
+        handleNameClick={displayModal}
       />
       <div className="page-options">
+        <p>Items per page</p>
         <ItemsPerPage setDisplayLimit={setDisplayLimit} />
         <ReactPaginate
           pageCount={pages}

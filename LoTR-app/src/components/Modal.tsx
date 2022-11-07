@@ -11,15 +11,10 @@ interface IOwnProps {
 
 function Modal({ modalData, setModalData }: IOwnProps) {
   return (
-    <div className="overlay">
+    <div>
+      <div className="modalBackdrop" onClick={() => setModalData(null)}></div>
       <div className="modalContainer">
-        <p
-          className="closeBtn"
-          onClick={() =>
-            //Spør Andreas om disse greiene
-            setModalData(null)
-          }
-        >
+        <p className="closeBtn" onClick={() => setModalData(null)}>
           X
         </p>
 

@@ -12,7 +12,6 @@ const ItemsPerPage = ({ setDisplayLimit }: IOwnProps) => {
             : null
         }
       >
-        <option>Items per page</option>
         <option>10</option>
         <option>20</option>
       </select>

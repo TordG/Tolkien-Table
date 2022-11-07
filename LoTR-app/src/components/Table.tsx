@@ -8,6 +8,10 @@ interface IOwnProps {
   handleNameClick: (char: iCharacter) => void;
 }
 
+const checkIfKnown = (str: string) => {
+  return str && !(str === "NaN") ? str : "Unknown";
+};
+
 const Table = ({
   characters,
   handleSortClick,
@@ -36,8 +40,8 @@ const Table = ({
               <td onClick={() => handleNameClick(character)}>
                 {character.name}
               </td>
-              <td>{character.race}</td>
-              <td>{character.gender}</td>
+              <td>{checkIfKnown(character.race)}</td>
+              <td>{checkIfKnown(character.gender)}</td>
               <td>
                 {character.wikiUrl ? (
                   <a href={character.wikiUrl} target="_blank">
@@ -47,7 +51,7 @@ const Table = ({
                   `No wiki page for ${character.name}`
                 )}
               </td>
-              <td>{character.birth}</td>
+              <td>{checkIfKnown(character.birth)}</td>
             </tr>
           ))}
       </tbody>

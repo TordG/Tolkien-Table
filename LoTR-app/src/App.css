@@ -61,3 +61,9 @@ td {
 a {
   color: rgb(14, 14, 14);
 }
+
+p {
+  position: relative;
+  font-size: 20px;
+  top: 5px;
+}
