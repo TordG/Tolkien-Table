@@ -41,7 +41,6 @@ function App() {
 
   //Optional parameter newUrl for å trådsikre handleCheckbox
   const fetchCharacters = async () => {
-    console.log("fetch");
     const res = await axios.get(createApiUrl(), {
       headers: headers,
     });
@@ -78,7 +77,7 @@ function App() {
   useEffect(() => {
     const filterParams = history.location.search.substr(1);
     const filtersFromParams = qs.parse(filterParams);
-    console.log("filter", filtersFromParams);
+
     if (filtersFromParams.page) {
       setPage(Number(filtersFromParams.page));
     }
@@ -91,9 +90,6 @@ function App() {
       fetchCharacters();
       history.push(`?page=${page}`);
       setAscending(true);
-
-      console.log("KJØRT!");
-      console.log("Page er nå " + page);
     }
   }, [displayLimit, page, races, mounted]);
 
@@ -119,11 +115,10 @@ function App() {
     const checked = event.target.checked;
     if (checked) {
       setRaces([...races, event.target.value]);
-      setPage(1);
     } else {
       setRaces(races.filter((r) => r != event.target.value));
-      setPage(1);
     }
+    setPage(1);
   };
 
   return (
