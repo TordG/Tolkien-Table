@@ -44,7 +44,7 @@ const Table = ({
               <td>{checkIfKnown(character.gender)}</td>
               <td>
                 {character.wikiUrl ? (
-                  <a href={character.wikiUrl} target="_blank">
+                  <a href={character.wikiUrl}>
                     Learn more about {character.name} at LoTR Wiki
                   </a>
                 ) : (

@@ -159,6 +159,7 @@ function App() {
           breakClassName={"page-item"}
           breakLinkClassName={"page-link"}
           activeClassName={"active"}
+          forcePage={page - 1}
         />
       </div>
     </div>
